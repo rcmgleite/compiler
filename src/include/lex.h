@@ -9,9 +9,12 @@
 #define SRC_INCLUDE_LEX_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "token.h"
 #include "utils.h"
+
+#define BUFFER_SIZE 255
 
 /*
  *	Reserved words
@@ -22,14 +25,14 @@ const char* const reserved_words[] = { "if", "else", "while", "int", "float",
 /*
  * 	unary and binary operators
  */
-const unsigned operators_size = 8;
-const char operators[] = { '=', '>', '<', '!', '+', '-', '*', '/' };
+#define OPERATORS_SIZE 8
+const char operators[OPERATORS_SIZE] = { '=', '>', '<', '!', '+', '-', '*', '/' };
 
 /*
  *	delimiters
  */
-const unsigned delimiters_size = 7;
-const char delimiters[] = { '{', '}', '[', ']', ',', ';', ' ' };
+#define DELIMITERS_SIZE 9
+const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ' };
 
 /*
  *	comment begin
@@ -52,6 +55,43 @@ typedef enum {
 	STATES_SIZE
 } state_t;
 
+void print_state(state_t s) {
+	switch(s){
+	case ST_INIT:
+		printf("state: ST_INIT");
+		break;
+	case ST_COMMENT:
+		printf("state: ST_COMMENT");
+		break;
+	case ST_NUM_INT:
+		printf("state: ST_NUM_INT");
+		break;
+	case ST_NUM_FLOAT:
+		printf("state: ST_NUM_FLOAT");
+		break;
+	case ST_APLHANUM:
+		printf("state: ST_ALPHANUM");
+		break;
+	case ST_OPERATOR:
+		printf("state: ST_OPERATOR");
+		break;
+	case ST_DELIMITER:
+		printf("state: ST_DELIMITER");
+		break;
+	case ST_TOKEN_END:
+		printf("state: ST_TOKEN_END");
+		break;
+	case ST_LEX_ERROR:
+		printf("state: ST_LEX_ERROR");
+		break;
+	default:
+		printf("state: UNKNOWN");
+		break;
+	}
+
+	printf("\n");
+}
+
 /*
  *	possible input characters classes
  */
@@ -68,57 +108,99 @@ typedef enum {
 
 /*
  *	Table that represents the Transductor states
+ *
+ *
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT	NEW_LINE
+ *	INIT
+ *	COMMENT
+ *	N_INT
+ *	FLOAT
+ *	ALPHAN
+ *	OP
+ *	DELIM
  */
 const state_t next_state[STATES_SIZE][IN_CLASS_SIZE] = {
-//char read	digit		apha		operator		DELIMITER		COMM_INIT		DOT		NEW_LINE
-/*INIT*/	{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR,	ST_TOKEN_END },
-/*COMMENT*/	{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_TOKEN_END },
-/*N_INT*/	{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT,	ST_TOKEN_END },
-/*FLOAT*/	{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
-/*ALPHAN*/	{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
-/*OPER*/	{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
-/*DELIM*/	{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END }
+		{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR,	ST_TOKEN_END },
+		{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_TOKEN_END },
+		{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT,	ST_TOKEN_END },
+		{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
+		{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END }
 };
+
+
+/*
+ *	Struct that represents the state function parameters
+ */
+typedef struct state_struct_t {
+	char curr_input;
+	char* buffer;
+	unsigned *buffer_ptr;
+	FILE* fp;
+	state_t* curr_state;
+	input_class input_class;
+	token_t* token;
+} state_struct_t;
 
 /*
  *	Handlers
  */
-void handle_digit(token_t** curr_token, char received_char, char buffer[]) {
-	//TODO
+void append_input(state_struct_t* param) {
+	param->buffer[*(param->buffer_ptr)] = param->curr_input;
+	*(param->buffer_ptr)+=1;
+	param->buffer[*(param->buffer_ptr)] = 0;
+
+	/*
+	 *	Calculate next state;
+	 */
+	*param->curr_state = next_state[*param->curr_state][param->input_class];
 }
 
-void handle_alpha(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
+void handle_init_delimiter(state_struct_t* param) {
+	printf(">>DEBUG");
+	if((param->curr_input == ' ' || param->curr_input == '\t')){
+		*param->curr_state = ST_TOKEN_END;
+	} else {
+		append_input(param);
+	}
 }
 
-void handle_operator(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
+void ignore_input(state_struct_t* param) {
+	// just ignore the input
 }
 
-void handle_delimiter(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
+void handle_token_end(state_struct_t* param) {
+	if((param->curr_input == ' ' || param->curr_input == '\t')){
+	} else {
+		ungetc(param->curr_input, param->fp);
+	}
+	*param->curr_state = ST_INIT;
 }
 
-void handle_comment_begin(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
+void handle_error(state_struct_t* param) {
+	printf("Compilation error");
+	exit(1);
 }
 
-void handle_dot(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
-}
-
-void handle_new_line(token_t** curr_token, char received_char, char buffer[]){
-	//TODO
-}
-
-void (* state_function[STATES_SIZE]) (token_t** curr_token, char received_char, char buffer[]) = {
-		handle_digit,
-		handle_alpha,
-		handle_operator,
-		handle_delimiter,
-		handle_comment_begin,
-		handle_dot,
-		handle_new_line
+/*
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT	NEW_LINE
+ *	INIT
+ *	COMMENT
+ *	N_INT
+ *	FLOAT
+ *	ALPHAN
+ *	OP
+ *	DELIM
+ */
+void (* state_function[STATES_SIZE][IN_CLASS_SIZE]) (state_struct_t* param) = {
+		{ append_input, append_input, append_input, handle_init_delimiter, append_input, append_input, handle_token_end },
+		{ ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input },
+		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, append_input, handle_token_end },
+		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_error, handle_token_end },
+		{ append_input, append_input, handle_token_end, handle_token_end, handle_token_end, handle_error, handle_token_end },
+		{ handle_token_end, handle_token_end, append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end },
+		{ handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end }
 };
 
 int is_digit(char c) {
@@ -131,7 +213,7 @@ int is_alpha(char c) {
 
 int is_operator(char c) {
 	unsigned i;
-	for(i = 0; i < operators_size; i++) {
+	for(i = 0; i < OPERATORS_SIZE; i++) {
 		if (c == operators[i])
 			return TRUE;
 	}
@@ -140,9 +222,10 @@ int is_operator(char c) {
 
 int is_delimiter(char c) {
 	unsigned i;
-	for(i = 0; i < delimiters_size; i++){
-		if (c == delimiters[i])
+	for(i = 0; i < DELIMITERS_SIZE; i++){
+		if (c == delimiters[i]) {
 			return TRUE;
+		}
 	}
 	return FALSE;
 }
@@ -190,35 +273,44 @@ token_t* get_token(FILE *fp) {
 	/*
 	 *	Variables
 	 */
-	char buffer[255];
-	state_t current_state = ST_INIT;
-	token_t* curr_token = NULL;
+
+	state_struct_t state_struct;
+	state_struct.buffer = malloc(BUFFER_SIZE * sizeof(char));
+	state_struct.curr_state = malloc(sizeof(state_t));
+	state_struct.buffer_ptr = malloc(sizeof(unsigned));
+	*state_struct.curr_state = ST_INIT;
+	*state_struct.buffer_ptr = 0;
+	state_struct.fp = fp;
 
 	/*
-	 *	Function main loop
+	 *	Main loop
 	 */
 	do {
 		/*
 		 *	Get next input
 		 */
-		char curr_input = getc(fp);
+		state_struct.curr_input = getc(fp);
 
 		/*
-		 *	Classify the new input by its type
+		 *	update state_struct
 		 */
-		input_class i_class = classify_input_class(curr_input);
+		state_struct.input_class = classify_input_class(state_struct.curr_input);
 
-		/*
-		 *	Find the next state based on the current state and the input class
-		 */
-		current_state = next_state[current_state][i_class];
-		state_function[current_state](&curr_token, curr_input, buffer);
+		state_function[*state_struct.curr_state][state_struct.input_class](&state_struct);
+	} while(*state_struct.curr_state != ST_INIT);
 
-	} while(current_state != ST_TOKEN_END);
-
-	// create token to return based on the buffer and states used
-
-	return curr_token;
+	/*
+	 *	Create token to return based on the buffer and states used
+	 *	TODO
+	 */
+	printf("buffer: %s\n", state_struct.buffer);
+	/*
+	 *	Free dynamic allocated memory and return
+	 */
+	free(state_struct.buffer);
+	free(state_struct.buffer_ptr);
+	free(state_struct.curr_state);
+	return state_struct.token;
 }
 
 
