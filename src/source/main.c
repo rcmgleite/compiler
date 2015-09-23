@@ -8,10 +8,7 @@
 #include "lex.h"
 
 int main() {
-
 	//TODO
-	token_t token = get_token();
-
 	return 0;
 }
 

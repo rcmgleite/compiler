@@ -16,7 +16,11 @@
  *		SPECIAL_SYMBOLS -> { } [ ] . , < > ; + = / *
  */
 typedef enum {
-	RESERVED_WORD, IDENTIFIER, SPECIAL_SYMBOL
+	CLASS_INT,
+	CLASS_FLOAT,
+	CLASS_RESERVED_WORD,
+	CLASS_IDENTIFIER,
+	CLASS_SPECIAL_SYMBOL
 } token_class;
 
 typedef struct token_t {
@@ -24,23 +28,5 @@ typedef struct token_t {
 	int value;
 	int line;
 } token_t;
-
-void print_token(const token_t* const t) {
-	switch (t->class) {
-	case RESERVED_WORD:
-		printf("RESERVED_WORD\n");
-		break;
-	case IDENTIFIER:
-		printf("IDENTIFIER\n");
-		break;
-
-	case SPECIAL_SYMBOL:
-		printf("SPECIAL_SYMBOL\n");
-		break;
-	}
-
-	// Print value from token
-	printf("'%c' at line: %d", t->value, t->line);
-}
 
 #endif /* SRC_INCLUDE_TOKEN_H_ */
