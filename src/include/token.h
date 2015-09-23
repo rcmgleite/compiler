@@ -25,7 +25,7 @@ typedef enum {
 
 typedef struct token_t {
 	token_class class;
-	int value;
+	int value;	// will always be an index of an specific table
 	int line;
 } token_t;
 
