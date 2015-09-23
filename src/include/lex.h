@@ -31,8 +31,8 @@ const char operators[OPERATORS_SIZE] = { '=', '>', '<', '!', '+', '-', '*', '/' 
 /*
  *	delimiters
  */
-#define DELIMITERS_SIZE 9
-const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ' };
+#define DELIMITERS_SIZE 11
+const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
 
 /*
  *	comment begin
@@ -102,7 +102,6 @@ typedef enum {
 	IN_DELIMITER, //  '{', '}', '[', ']', ',', ';', ' ', '\t'
 	IN_COMMENT_BEGIN, // #
 	IN_DOT, // . -> only used for float numbers
-	IN_NEW_LINE, //'\n'
 	IN_CLASS_SIZE
 } input_class;
 
@@ -110,7 +109,7 @@ typedef enum {
  *	Table that represents the Transductor states
  *
  *
- *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT	NEW_LINE
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT
  *	INIT
  *	COMMENT
  *	N_INT
@@ -120,13 +119,13 @@ typedef enum {
  *	DELIM
  */
 const state_t next_state[STATES_SIZE][IN_CLASS_SIZE] = {
-		{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR,	ST_TOKEN_END },
-		{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_TOKEN_END },
-		{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT,	ST_TOKEN_END },
-		{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
-		{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR,	ST_TOKEN_END },
-		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
-		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END }
+		{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR },
+		{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT },
+		{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT },
+		{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR },
+		{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END }
 };
 
 
@@ -157,13 +156,13 @@ void append_input(state_struct_t* param) {
 	*param->curr_state = next_state[*param->curr_state][param->input_class];
 }
 
-void handle_init_delimiter(state_struct_t* param) {
-	printf(">>DEBUG");
-	if((param->curr_input == ' ' || param->curr_input == '\t')){
-		*param->curr_state = ST_TOKEN_END;
+void handle_delimiter_init(state_struct_t* param) {
+	if((param->curr_input == ' ' || param->curr_input == '\t' || param->curr_input == '\n')) {
+		*param->curr_state = ST_INIT;
 	} else {
 		append_input(param);
 	}
+
 }
 
 void ignore_input(state_struct_t* param) {
@@ -171,11 +170,11 @@ void ignore_input(state_struct_t* param) {
 }
 
 void handle_token_end(state_struct_t* param) {
-	if((param->curr_input == ' ' || param->curr_input == '\t')){
+	if((param->curr_input == ' ' || param->curr_input == '\t' || param->curr_input == '\n')){
 	} else {
 		ungetc(param->curr_input, param->fp);
 	}
-	*param->curr_state = ST_INIT;
+	*param->curr_state = ST_TOKEN_END;
 }
 
 void handle_error(state_struct_t* param) {
@@ -184,7 +183,7 @@ void handle_error(state_struct_t* param) {
 }
 
 /*
- *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT	NEW_LINE
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT
  *	INIT
  *	COMMENT
  *	N_INT
@@ -194,13 +193,13 @@ void handle_error(state_struct_t* param) {
  *	DELIM
  */
 void (* state_function[STATES_SIZE][IN_CLASS_SIZE]) (state_struct_t* param) = {
-		{ append_input, append_input, append_input, handle_init_delimiter, append_input, append_input, handle_token_end },
-		{ ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input },
-		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, append_input, handle_token_end },
-		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_error, handle_token_end },
-		{ append_input, append_input, handle_token_end, handle_token_end, handle_token_end, handle_error, handle_token_end },
-		{ handle_token_end, handle_token_end, append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end },
-		{ handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end }
+		{ append_input, append_input, append_input, handle_delimiter_init, append_input, append_input},
+		{ ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input},
+		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, append_input},
+		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_error},
+		{ append_input, append_input, handle_token_end, handle_token_end, handle_token_end, handle_error},
+		{ handle_token_end, handle_token_end, append_input, handle_token_end, handle_token_end, handle_token_end},
+		{ handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_token_end}
 };
 
 int is_digit(char c) {
@@ -238,10 +237,6 @@ int is_dot(char c) {
 	return c == '.';
 }
 
-int is_new_line(char c) {
-	return c == '\n';
-}
-
 /*
  *	classify input read from file by its type
  *		-> it returns -1 if the type does not match any of the specified by the language
@@ -259,8 +254,6 @@ input_class classify_input_class(char c) {
 		return IN_COMMENT_BEGIN;
 	else if(is_dot(c))
 		return IN_DOT;
-	else if(is_new_line(c))
-		return IN_NEW_LINE;
 	else
 		return -1;
 }
@@ -297,7 +290,7 @@ token_t* get_token(FILE *fp) {
 		state_struct.input_class = classify_input_class(state_struct.curr_input);
 
 		state_function[*state_struct.curr_state][state_struct.input_class](&state_struct);
-	} while(*state_struct.curr_state != ST_INIT);
+	} while(*state_struct.curr_state != ST_TOKEN_END);
 
 	/*
 	 *	Create token to return based on the buffer and states used

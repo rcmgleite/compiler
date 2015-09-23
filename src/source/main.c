@@ -23,6 +23,7 @@ int main() {
 	get_token(fp);
 	get_token(fp);
 	get_token(fp);
+	get_token(fp);
 	return 0;
 }
 
