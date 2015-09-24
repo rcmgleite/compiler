@@ -13,17 +13,18 @@ int main() {
 		fprintf(stderr, "Unable to open file test.c");
 		exit(1);
 	}
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
-	get_token(fp);
+	token_t* t;
+
+	while(TRUE) {
+		t = get_token(fp);
+		if(t == NULL) {
+			break;
+		}
+
+		print_token_class(t);
+	}
+
+	printf("\n\n>> FINISHED!\n\n");
 	return 0;
 }
 
