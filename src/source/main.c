@@ -25,6 +25,7 @@ int main() {
 		print_token(t);
 	}
 
+	fclose(fp);
 	printf("\n>> FINISHED!\n\n");
 	return 0;
 }
