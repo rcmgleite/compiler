@@ -8,7 +8,7 @@
 #include "lex.h"
 
 int main() {
-	FILE* fp = fopen("test.c", "r");
+	FILE* fp = fopen("test.cmm", "r");
 	if(fp == NULL) {
 		fprintf(stderr, "Unable to open file test.c");
 		exit(1);
@@ -21,7 +21,7 @@ int main() {
 			break;
 		}
 
-		print_token_class(t);
+		print_token(t);
 	}
 
 	printf("\n\n>> FINISHED!\n\n");

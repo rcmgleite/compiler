@@ -1,0 +1,11 @@
+#comentario idiota
+int main() {
+	int a = 1.2;
+	if (a >= 3) {
+		int b = 4;
+	}
+	#outro comentario babaca
+	while(1) {
+		const float c = 4.3
+	}
+}

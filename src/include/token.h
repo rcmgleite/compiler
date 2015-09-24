@@ -37,7 +37,7 @@ token_t* new_token(token_class c, int v) {
 	return t;
 }
 
-void print_token_class(token_t* t) {
+void print_token(token_t* t) {
 	switch(t->class){
 	case CLASS_INT:
 		printf("token_class: %s\n", "CLASS_INT");
@@ -64,6 +64,8 @@ void print_token_class(token_t* t) {
 		printf("token_class: %s\n", "UNDEFINED");
 		break;
 	}
+
+	printf("token_value: %d\n\n", t->value);
 }
 
 #endif /* SRC_INCLUDE_TOKEN_H_ */

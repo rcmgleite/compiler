@@ -179,6 +179,15 @@ void ignore_input(state_struct_t* param) {
 	// just ignore the input
 }
 
+void handle_comment_init(state_struct_t* param) {
+	*param->curr_state = ST_COMMENT;
+}
+
+void handle_comment_delimiter(state_struct_t* param) {
+	if(param->curr_input == '\n')
+		*param->curr_state = ST_INIT;
+}
+
 void handle_token_end(state_struct_t* param) {
 	if((param->curr_input == ' ' || param->curr_input == '\t' || param->curr_input == '\n')){
 	} else {
@@ -204,8 +213,8 @@ void handle_error(state_struct_t* param) {
  *	DELIM
  */
 void (* state_function[STATES_SIZE][IN_CLASS_SIZE]) (state_struct_t* param) = {
-		{ append_input, append_input, append_input, handle_delimiter_init, append_input, append_input},
-		{ ignore_input, ignore_input, ignore_input, ignore_input, ignore_input, ignore_input},
+		{ append_input, append_input, append_input, handle_delimiter_init, handle_comment_init, append_input},
+		{ ignore_input, ignore_input, ignore_input, handle_comment_delimiter, ignore_input, ignore_input},
 		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, append_input},
 		{ append_input, handle_token_end, handle_token_end, handle_token_end, handle_token_end, handle_error},
 		{ append_input, append_input, handle_token_end, handle_token_end, handle_token_end, handle_error},
@@ -319,16 +328,10 @@ void build_token(state_struct_t* param) {
 }
 
 /*
- *	main function - get_token(FILE* fp);
+ *	main function
  */
 token_t* get_token(FILE *fp) {
-
-	/*
-	 *	Variables
-	 */
-
 	state_struct_t state_struct;
-//	init_state_struct(&state_struct);
 	state_struct.buffer = malloc(BUFFER_SIZE * sizeof(char));
 	state_struct.last_state = malloc(sizeof(state_t));
 	state_struct.curr_state = malloc(sizeof(state_t));
