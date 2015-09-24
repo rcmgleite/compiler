@@ -41,6 +41,28 @@ const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';
 const char commentary = '#';
 
 /*
+ *	state struct lifecycle functions
+ */
+void create_state_struct(state_struct_t* ss, FILE* fp) {
+	ss->buffer = malloc(BUFFER_SIZE * sizeof(char));
+	ss->last_state = malloc(sizeof(state_t));
+	ss->curr_state = malloc(sizeof(state_t));
+	ss->buffer_ptr = malloc(sizeof(unsigned));
+	*ss->last_state = ST_INIT;
+	*ss->curr_state = ST_INIT;
+	*ss->buffer_ptr = 0;
+	ss->fp = fp;
+	ss->token = NULL;
+}
+
+void destroy_state_struct(state_struct_t* ss) {
+	free(ss->buffer);
+	free(ss->buffer_ptr);
+	free(ss->curr_state);
+	free(ss->last_state);
+}
+
+/*
  *	Table that represents the Transductor states
  *
  *
@@ -256,15 +278,7 @@ void build_token(state_struct_t* param) {
  */
 token_t* get_token(FILE *fp) {
 	state_struct_t state_struct;
-	state_struct.buffer = malloc(BUFFER_SIZE * sizeof(char));
-	state_struct.last_state = malloc(sizeof(state_t));
-	state_struct.curr_state = malloc(sizeof(state_t));
-	state_struct.buffer_ptr = malloc(sizeof(unsigned));
-	*state_struct.last_state = ST_INIT;
-	*state_struct.curr_state = ST_INIT;
-	*state_struct.buffer_ptr = 0;
-	state_struct.fp = fp;
-	state_struct.token = NULL;
+	create_state_struct(&state_struct, fp);
 
 	/*
 	 *	Main loop
@@ -297,9 +311,7 @@ token_t* get_token(FILE *fp) {
 	/*
 	 *	Free dynamic allocated memory and return
 	 */
-	free(state_struct.buffer);
-	free(state_struct.buffer_ptr);
-	free(state_struct.curr_state);
-	free(state_struct.last_state);
+	destroy_state_struct(&state_struct);
+
 	return state_struct.token;
 }

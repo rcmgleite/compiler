@@ -57,6 +57,11 @@ typedef struct state_struct_t {
 	token_t* token;
 } state_struct_t;
 
+/*
+ *	state struct lifecycle functions
+ */
+void create_state_struct(state_struct_t* ss, FILE* fp);
+void destroy_state_struct(state_struct_t* ss);
 
 /*
  *	main function
