@@ -8,4 +8,8 @@ int main() {
 	while(1) {
 		const float c =4.3
 	}
+
+	if((a || b) ^ (a && b)){
+		return a;
+	}
 }

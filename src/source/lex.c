@@ -13,21 +13,21 @@
 /*
  *	Reserved words
  */
-#define REZERVED_WORDS_SIZE 7
+#define RESERVED_WORDS_SIZE 9
 const char* const reserved_words[] = { "if", "else", "while", "int", "float",
-		"return", "const" };
+		"return", "const", "break", "continue" };
 
 /*
  *	Single operators
  */
-#define SINGLE_OPERATORS_SIZE 8
-const char* const single_operators[] = {"=", ">", "<", "!", "+", "-", "*", "/" };
+#define SINGLE_OPERATORS_SIZE 11
+const char* const single_operators[] = {"=", ">", "<", "!", "+", "-", "*", "/", "^", "&", "|" };
 
 /*
  *	Double operators
  */
-#define DOUBLE_OPERATORS_SIZE 4
-const char* const double_operators[] = {"==", ">=", "<=", "!=" };
+#define DOUBLE_OPERATORS_SIZE 6
+const char* const double_operators[] = {"==", ">=", "<=", "!=", "&&", "||" };
 
 /*
  *	delimiters
@@ -225,12 +225,12 @@ void build_token(state_struct_t* param) {
 	int i_val;
 	switch(*param->last_state) {
 	case ST_APLHANUM:
-		for(i = 0; i < REZERVED_WORDS_SIZE; i++) {
+		for(i = 0; i < RESERVED_WORDS_SIZE; i++) {
 			if(strcmp(param->buffer, reserved_words[i]) == 0)
 				break;
 		}
 
-		if(i == REZERVED_WORDS_SIZE) {
+		if(i == RESERVED_WORDS_SIZE) {
 			//TODO TABELA DE SIMBOLOS
 			i = -1;
 			param->token = new_token(CLASS_IDENTIFIER, &i);
