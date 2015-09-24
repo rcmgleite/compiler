@@ -11,6 +11,20 @@
 #include "lex.h"
 
 /*
+ * 	Symbol table
+ */
+unsigned symbol_table_ptr = 0;
+char symbol_table[BUFFER_SIZE][SYMBOL_TABLE_SIZE];
+
+void print_symbol_table() {
+	unsigned i;
+	printf("Printing Symbol table: \n");
+	for(i = 0; i < symbol_table_ptr; i++) {
+		printf("index: %u -> %s\n", i, symbol_table[i]);
+	}
+}
+
+/*
  *	Reserved words
  */
 #define RESERVED_WORDS_SIZE 9
@@ -231,9 +245,8 @@ void build_token(state_struct_t* param) {
 		}
 
 		if(i == RESERVED_WORDS_SIZE) {
-			//TODO TABELA DE SIMBOLOS
-			i = -1;
-			param->token = new_token(CLASS_IDENTIFIER, &i);
+			param->token = new_token(CLASS_IDENTIFIER, &symbol_table_ptr);
+			strcpy(symbol_table[symbol_table_ptr++], param->buffer);
 		} else {
 			param->token = new_token(CLASS_RESERVED_WORD, &i);
 		}
@@ -312,6 +325,7 @@ token_t* get_token(FILE *fp) {
 	 *	Free dynamic allocated memory and return
 	 */
 	destroy_state_struct(&state_struct);
+	print_symbol_table();
 
 	return state_struct.token;
 }

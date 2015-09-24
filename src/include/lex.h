@@ -14,6 +14,8 @@
 #include "utils.h"
 
 #define BUFFER_SIZE 255
+#define SYMBOL_TABLE_SIZE 4096
+
 /*
  *	Transductor states enum
  */
