@@ -5,6 +5,7 @@
  *      Author: rafael
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include "lex.h"
 
 int main() {
@@ -24,7 +25,7 @@ int main() {
 		print_token(t);
 	}
 
-	printf("\n\n>> FINISHED!\n\n");
+	printf("\n>> FINISHED!\n\n");
 	return 0;
 }
 
