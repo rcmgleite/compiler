@@ -1,3 +1,4 @@
 lexical_analyzer
 *.o
 *.d
+Debug/src
