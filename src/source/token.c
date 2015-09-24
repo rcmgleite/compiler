@@ -9,10 +9,14 @@
 
 #include "token.h"
 
-token_t* new_token(token_class c, int v) {
+token_t* new_token(token_class c, void* val) {
 	token_t* t = (token_t*)malloc(sizeof(token_t));
 	t->class = c;
-	t->value = v;
+	if(c == CLASS_FLOAT) {
+		t->value.f_value = (float)*((float*)val);
+	} else {
+		t->value.i_value = (int)*((int*)val);
+	}
 	return t;
 }
 
@@ -44,7 +48,11 @@ void print_token(token_t* t) {
 		break;
 	}
 
-	printf("token_value: %d\n\n", t->value);
+	if(t->class == CLASS_FLOAT) {
+		printf("token_value: %f\n\n", t->value.f_value);
+	} else {
+		printf("token value: %d\n\n", t->value.i_value);
+	}
 }
 
 

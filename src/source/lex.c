@@ -36,6 +36,11 @@ const char* const double_operators[] = {"==", ">=", "<=", "!=" };
 const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
 
 /*
+ *	comment begin
+ */
+const char commentary = '#';
+
+/*
  *	Table that represents the Transductor states
  *
  *
@@ -59,11 +64,6 @@ const state_t next_state[STATES_SIZE][IN_CLASS_SIZE] = {
 		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
 		{ ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR }
 };
-
-/*
- *	comment begin
- */
-const char commentary = '#';
 
 /*
  *	Handlers
@@ -199,6 +199,8 @@ input_class classify_input_class(char c) {
 
 void build_token(state_struct_t* param) {
 	unsigned i;
+	float f_val;
+	int i_val;
 	switch(*param->last_state) {
 	case ST_APLHANUM:
 		for(i = 0; i < REZERVED_WORDS_SIZE; i++) {
@@ -207,9 +209,11 @@ void build_token(state_struct_t* param) {
 		}
 
 		if(i == REZERVED_WORDS_SIZE) {
-			param->token = new_token(CLASS_IDENTIFIER, 0);
+			//TODO TABELA DE SIMBOLOS
+			i = -1;
+			param->token = new_token(CLASS_IDENTIFIER, &i);
 		} else {
-			param->token = new_token(CLASS_RESERVED_WORD, (int)i);
+			param->token = new_token(CLASS_RESERVED_WORD, &i);
 		}
 		break;
 	case ST_DELIMITER:
@@ -217,13 +221,15 @@ void build_token(state_struct_t* param) {
 			if(param->buffer[0] == delimiters[i])
 				break;
 		}
-		param->token = new_token(CLASS_DELIMITER, (int)i);
+		param->token = new_token(CLASS_DELIMITER, &i);
 		break;
 	case ST_NUM_FLOAT:
-		param->token = new_token(CLASS_FLOAT, strtof(param->buffer, NULL));
+		f_val = strtof(param->buffer, NULL);
+		param->token = new_token(CLASS_FLOAT, &f_val);
 		break;
 	case ST_NUM_INT:
-		param->token = new_token(CLASS_INT, strtol(param->buffer, NULL, 10));
+		i_val = strtol(param->buffer, NULL, 10);
+		param->token = new_token(CLASS_INT, &i_val);
 		break;
 	case ST_OPERATOR:
 		if(*param->buffer_ptr == 1){
@@ -231,13 +237,13 @@ void build_token(state_struct_t* param) {
 				if(param->buffer[0] == single_operators[i][0])
 					break;
 			}
-			param->token = new_token(CLASS_SINGLE_OPERATOR, (int)i);
+			param->token = new_token(CLASS_SINGLE_OPERATOR, &i);
 		} else {
 			for(i = 0; i < DOUBLE_OPERATORS_SIZE; i++) {
 				if(param->buffer[0] == double_operators[i][0])
 					break;
 			}
-			param->token = new_token(CLASS_DOUBLE_OPERATOR, (int)i);
+			param->token = new_token(CLASS_DOUBLE_OPERATOR, &i);
 		}
 		break;
 	default:
