@@ -1,10 +1,10 @@
 int max(int a, int b) {
   if (a > b) {
-		return a
+		return a;
 	}
-	return b
+	return b;
 }
 
 int main() {
-	return max(1, 2)
+	return max(1, 2);
 }
