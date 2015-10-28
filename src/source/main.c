@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lex.h"
+#include "syntatic.h"
 
 int main() {
 	FILE* fp = fopen("test.cmm", "r");
@@ -14,16 +15,8 @@ int main() {
 		fprintf(stderr, "Unable to open file test.c");
 		exit(1);
 	}
-	token_t* t;
 
-	while(TRUE) {
-		t = get_token(fp);
-		if(t == NULL) {
-			break;
-		}
-
-		print_token(t);
-	}
+	analyze(fp);
 
 	fclose(fp);
 	printf("\n>> FINISHED!\n\n");

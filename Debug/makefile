@@ -23,19 +23,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: lexical_analyzer
+all: compiler
 
 # Tool invocations
-lexical_analyzer: $(OBJS) $(USER_OBJS)
+compiler: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc  -o "lexical_analyzer" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "compiler" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) lexical_analyzer
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) compiler
 	-@echo ' '
 
 .PHONY: all clean dependents
