@@ -12,7 +12,7 @@
 int main() {
 	FILE* fp = fopen("test.cmm", "r");
 	if(fp == NULL) {
-		fprintf(stderr, "Unable to open file test.c");
+		fprintf(stderr, "Unable to open file test.cmm");
 		exit(1);
 	}
 

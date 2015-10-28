@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "tables.h"
 #include "lex.h"
 
 /*
@@ -23,36 +24,6 @@ void print_symbol_table() {
 		printf("index: %u -> %s\n", i, symbol_table[i]);
 	}
 }
-
-/*
- *	Reserved words
- */
-#define RESERVED_WORDS_SIZE 9
-const char* const reserved_words[] = { "if", "else", "while", "int", "float",
-		"return", "const", "break", "continue" };
-
-/*
- *	Single operators
- */
-#define SINGLE_OPERATORS_SIZE 11
-const char* const single_operators[] = {"=", ">", "<", "!", "+", "-", "*", "/", "^", "&", "|" };
-
-/*
- *	Double operators
- */
-#define DOUBLE_OPERATORS_SIZE 6
-const char* const double_operators[] = {"==", ">=", "<=", "!=", "&&", "||" };
-
-/*
- *	delimiters
- */
-#define DELIMITERS_SIZE 11
-const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
-
-/*
- *	comment begin
- */
-const char commentary = '#';
 
 /*
  *	state struct lifecycle functions
@@ -188,7 +159,7 @@ int is_alpha(char c) {
 int is_operator(char c) {
 	unsigned i;
 	for(i = 0; i < SINGLE_OPERATORS_SIZE; i++) {
-		if (c == single_operators[i][0])
+		if (c == get_single_operators()[i][0])
 			return TRUE;
 	}
 	return FALSE;
@@ -197,7 +168,7 @@ int is_operator(char c) {
 int is_delimiter(char c) {
 	unsigned i;
 	for(i = 0; i < DELIMITERS_SIZE; i++){
-		if (c == delimiters[i]) {
+		if (c == get_delimiters()[i]) {
 			return TRUE;
 		}
 	}
@@ -205,7 +176,7 @@ int is_delimiter(char c) {
 }
 
 int is_comment_begin(char c) {
-	return c == commentary;
+	return c == get_commentary();
 }
 
 int is_dot(char c) {
@@ -240,7 +211,7 @@ void build_token(state_struct_t* param) {
 	switch(*param->last_state) {
 	case ST_APLHANUM:
 		for(i = 0; i < RESERVED_WORDS_SIZE; i++) {
-			if(strcmp(param->buffer, reserved_words[i]) == 0)
+			if(strcmp(param->buffer, get_reserved_words()[i]) == 0)
 				break;
 		}
 
@@ -253,7 +224,7 @@ void build_token(state_struct_t* param) {
 		break;
 	case ST_DELIMITER:
 		for(i = 0; i < DELIMITERS_SIZE; i++){
-			if(param->buffer[0] == delimiters[i])
+			if(param->buffer[0] == get_delimiters()[i])
 				break;
 		}
 		param->token = new_token(CLASS_DELIMITER, &i);
@@ -269,13 +240,13 @@ void build_token(state_struct_t* param) {
 	case ST_OPERATOR:
 		if(*param->buffer_ptr == 1){
 			for(i = 0; i < SINGLE_OPERATORS_SIZE; i++) {
-				if(param->buffer[0] == single_operators[i][0])
+				if(param->buffer[0] == get_single_operators()[i][0])
 					break;
 			}
 			param->token = new_token(CLASS_SINGLE_OPERATOR, &i);
 		} else {
 			for(i = 0; i < DOUBLE_OPERATORS_SIZE; i++) {
-				if(param->buffer[0] == double_operators[i][0])
+				if(param->buffer[0] == get_double_operators()[i][0])
 					break;
 			}
 			param->token = new_token(CLASS_DOUBLE_OPERATOR, &i);
@@ -317,7 +288,7 @@ token_t* get_token(FILE *fp) {
 	 * 	Build token to be returned
 	 */
 	if(*state_struct.buffer_ptr != 0){
-		printf(">> buffer: %s\n", state_struct.buffer);
+//		printf(">> buffer: %s\n", state_struct.buffer);
 		build_token(&state_struct);
 	}
 
@@ -325,7 +296,7 @@ token_t* get_token(FILE *fp) {
 	 *	Free dynamic allocated memory and return
 	 */
 	destroy_state_struct(&state_struct);
-	print_symbol_table();
+//	print_symbol_table();
 
 	return state_struct.token;
 }

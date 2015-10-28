@@ -13,4 +13,9 @@
 #define TRUE 1
 #define FALSE 0
 
+#define DEBUG(msg) \
+	do { \
+		printf("%s %d [%s] %s\n", __FILE__, __LINE__, __func__, #msg); \
+	} while (0)
+
 #endif /* SRC_INCLUDE_UTILS_H_ */
