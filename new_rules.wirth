@@ -1,0 +1,16 @@
+1) programa = {tipo identificador "(" [declaracao_variavel {"," declaracao_variavel}] ")" {instrucao} "end" | tipo identificador [ "[" expressao "]" ] ";"}. 
+2) declaracao_variavel = modificador tipo identificador [ "[" expressao "]" ].
+3) modificador = ["const"]
+3) instrucao = declaracao_variavel ";" | "return" retorno | "break" ";" | "continue" ";"  | "while" laco | "if" condicional | identificador "=" expressao ";" 
+	| identificador "(" [{expressao ","} expressao] ")" ";".
+4) laco = "(" expressao ")" "{" {instrucao} "}".
+5) condicional = "(" expressao ")" "{" {instrucao} ["else" {instrucao}] "}".
+6) retorno = expressao ";".
+7) expressao = termo_e ["|" expressao] | termo_e ["||" expressao].
+8) termo_e = termo_igualdade ["&" termo_e] | termo_igualdade ["&&" termo_e].
+9) termo_igualdade = termo_relacional ["==" termo_igualdade] | termo_relacional ["!=" termo_igualdade].
+10) termo_relacional = termo_aditivo [">" termo_relacional] | termo_aditivo ["<" termo_relacional] | termo_aditivo [">=" termo_relacional] 
+	| termo_aditivo ["<=" termo_relacional].
+11) termo_aditivo = termo_multiplicativo ["+" termo_aditivo] | termo_multiplicativo ["-" termo_aditivo].
+12) termo_multiplicativo = termo_primario ["*" termo_multiplicativo] | termo_primario ["/" termo_multiplicativo] | termo_primario ["%" termo_multiplicativo].
+13) termo_primario = identificador | constante_numero | constante_caractere | identificador "(" [{expressao ","} expressao] ")" | "(" expressao ")".
