@@ -1,15 +1,18 @@
 #comentario bla bla 
 int main() {
-	int a= 1.2;
+	int a;
+	a = 12;
 	if (a>= 3) {
-		int b = 4;
+		int b;
+		b = 4;
 	}
 	#outro comentario bla bla
 	while(1) {
-		const float c =4.3
+		float c; 
+		c =43;
 	}
 
-	if((a || b) ^ (a && b)){
+	if(a || b) {
 		return a;
 	}
 }

@@ -9,26 +9,26 @@
 /*
  *	Reserved words
  */
-const char* const reserved_words[] = { "if", "else", "while", "int", "float",
+const char* reserved_words[] = { "if", "else", "while", "int", "float",
 		"return", "const", "break", "continue" };
 
-const char** const get_reserved_words() {
+const char**  get_reserved_words() {
 	return reserved_words;
 }
 
 /*
  *	Single operators
  */
-const char* const single_operators[] = {"=", ">", "<", "!", "+", "-", "*", "/", "^", "&", "|" };
-const char** const get_single_operators() {
+const char single_operators[] = {'=', '>', '<', '!', '+', '-', '*', '/', '^', '&', '|' };
+const char* get_single_operators() {
 	return single_operators;
 }
 
 /*
  *	Double operators
  */
-const char* const double_operators[] = {"==", ">=", "<=", "!=", "&&", "||" };
-const char** const get_double_operators() {
+const char* double_operators[] = {"==", ">=", "<=", "!=", "&&", "||" };
+const char** get_double_operators() {
 	return double_operators;
 }
 
@@ -36,7 +36,7 @@ const char** const get_double_operators() {
  *	delimiters
  */
 const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
-const char* const get_delimiters() {
+const char* get_delimiters() {
 	return delimiters;
 }
 

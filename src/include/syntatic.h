@@ -14,7 +14,6 @@
 typedef enum {
 	FSM_PROGRAM,
 	FSM_VAR_DECLARATION,
-	FSM_MODIFIER,
 	FSM_INSTRUCTION,
 	FSM_LOOP,
 	FSM_COND,
@@ -39,7 +38,6 @@ int analyze(FILE *fp);
  */
 int fsm_program(token_t* t);
 int fsm_var_declaration(token_t* t);
-int fsm_modifier(token_t* t);
 int fsm_instruction(token_t* t);
 int fsm_loop(token_t* t);
 int fsm_cond(token_t* t);

@@ -12,6 +12,7 @@
 
 #define TRUE 1
 #define FALSE 0
+#define ERROR -1
 
 #define DEBUG(msg) \
 	do { \

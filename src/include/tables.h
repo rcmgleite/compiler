@@ -12,25 +12,25 @@
  *	Reserved words
  */
 #define RESERVED_WORDS_SIZE 9
-const char** const get_reserved_words();
+const char** get_reserved_words();
 
 /*
  *	Single operators
  */
 #define SINGLE_OPERATORS_SIZE 11
-const char** const get_single_operators();
+const char* get_single_operators();
 
 /*
  *	Double operators
  */
 #define DOUBLE_OPERATORS_SIZE 6
-const char** const get_double_operators();
+const char** get_double_operators();
 
 /*
  *	delimiters
  */
 #define DELIMITERS_SIZE 11
-const char* const get_delimiters();
+const char* get_delimiters();
 
 /*
  *	commentary

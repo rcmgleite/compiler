@@ -159,7 +159,7 @@ int is_alpha(char c) {
 int is_operator(char c) {
 	unsigned i;
 	for(i = 0; i < SINGLE_OPERATORS_SIZE; i++) {
-		if (c == get_single_operators()[i][0])
+		if (c == get_single_operators()[i])
 			return TRUE;
 	}
 	return FALSE;
@@ -240,7 +240,7 @@ void build_token(state_struct_t* param) {
 	case ST_OPERATOR:
 		if(*param->buffer_ptr == 1){
 			for(i = 0; i < SINGLE_OPERATORS_SIZE; i++) {
-				if(param->buffer[0] == get_single_operators()[i][0])
+				if(param->buffer[0] == get_single_operators()[i])
 					break;
 			}
 			param->token = new_token(CLASS_SINGLE_OPERATOR, &i);
@@ -288,7 +288,7 @@ token_t* get_token(FILE *fp) {
 	 * 	Build token to be returned
 	 */
 	if(*state_struct.buffer_ptr != 0){
-//		printf(">> buffer: %s\n", state_struct.buffer);
+		printf(">> buffer: %s\n", state_struct.buffer);
 		build_token(&state_struct);
 	}
 
