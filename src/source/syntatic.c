@@ -99,8 +99,7 @@ void pop(stack_t* s) {
 		free(aux);
 		state.get_token_flag = 0;
 	} else {
-		fprintf(stderr, "[ERROR] Trying to pop(&stack) from empty stack");
-		exit(1);
+		state.current_sub_machine_state = ERROR;
 	}
 }
 
@@ -118,10 +117,8 @@ stack_t stack;
  */
 int should_get_next_token() {
 	if(state.get_token_flag) {
-		DEBUG("Will return TRUE");
 		return TRUE;
 	}
-	DEBUG("Will return FALSE");
 	return FALSE;
 }
 
@@ -145,16 +142,11 @@ int analyze(FILE* fp) {
 	state.current_sub_machine_state = 0;
 	state.current_sub_machine = 0;
 	while(TRUE) {
-
-		printf("\nCURR_MACHINE = %d\n", state.current_sub_machine);
-		printf("\nCURR_STATE = %d\n", state.current_sub_machine_state);
 		if(should_get_next_token()) {
-			DEBUG("Got new token");
 			t = get_token(fp);
 			if (t == NULL) {
 				break;
 			}
-			print_token(t);
 		}
 
 		state.get_token_flag = 1;
@@ -166,7 +158,7 @@ int analyze(FILE* fp) {
 		}
 	}
 
-	DEBUG("Compilation Succefull");
+	DEBUG("Compilation Successful");
 	return 0;
 }
 
@@ -185,7 +177,6 @@ int is_type(token_t* t) {
  *	Internal state functions
  */
 int fsm_program(token_t* t){
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(is_type(t)) {
@@ -292,7 +283,6 @@ int fsm_program(token_t* t){
 }
 
 int fsm_var_declaration(token_t* t){
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(is_type(t)) {
@@ -337,7 +327,6 @@ int fsm_var_declaration(token_t* t){
 }
 
 int fsm_instruction(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(t->class == CLASS_RESERVED_WORD) {
@@ -433,7 +422,6 @@ int fsm_instruction(token_t* t) {
 }
 
 int fsm_loop(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state){
 	case 0:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
@@ -479,7 +467,6 @@ int fsm_loop(token_t* t) {
 }
 
 int fsm_cond(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
@@ -538,7 +525,6 @@ int fsm_cond(token_t* t) {
 }
 
 int fsm_return(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -560,7 +546,6 @@ int fsm_return(token_t* t) {
 }
 
 int fsm_expr(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -589,7 +574,6 @@ int fsm_expr(token_t* t) {
 }
 
 int fsm_term_and(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -618,7 +602,6 @@ int fsm_term_and(token_t* t) {
 }
 
 int fsm_term_equal(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -648,7 +631,6 @@ int fsm_term_equal(token_t* t) {
 }
 
 int fsm_term_relacional(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -681,7 +663,6 @@ int fsm_term_relacional(token_t* t) {
 }
 
 int fsm_term_add(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
@@ -709,7 +690,6 @@ int fsm_term_add(token_t* t) {
 }
 
 int fsm_term_mult(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 		case 0:
 			semantic_tbd();
@@ -737,7 +717,6 @@ int fsm_term_mult(token_t* t) {
 }
 
 int fsm_term_primary(token_t* t) {
-	DEBUG("");
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(t->class == CLASS_IDENTIFIER){

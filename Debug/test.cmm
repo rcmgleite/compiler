@@ -7,9 +7,13 @@ int main() {
 		b = 4;
 	}
 	#outro comentario bla bla
-	while(1) {
+	while(a==b) {
 		float c; 
 		c =43;
+	}
+	
+	while(1){
+		a = 44;
 	}
 
 	if(a || b) {

@@ -288,7 +288,7 @@ token_t* get_token(FILE *fp) {
 	 * 	Build token to be returned
 	 */
 	if(*state_struct.buffer_ptr != 0){
-		printf(">> buffer: %s\n", state_struct.buffer);
+//		printf(">> buffer: %s\n", state_struct.buffer);
 		build_token(&state_struct);
 	}
 
