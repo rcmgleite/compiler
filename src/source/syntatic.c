@@ -167,7 +167,8 @@ int analyze(FILE* fp) {
  */
 int is_type(token_t* t) {
 	if(t->class == CLASS_RESERVED_WORD && (strcmp(get_reserved_words()[t->value.i_value], "int") == 0
-			|| strcmp(get_reserved_words()[t->value.i_value], "float") == 0 )){
+			|| strcmp(get_reserved_words()[t->value.i_value], "float") == 0
+			|| strcmp(get_reserved_words()[t->value.i_value], "string") == 0 )){
 		return TRUE;
 	}
 	return FALSE;
@@ -717,12 +718,14 @@ int fsm_term_mult(token_t* t) {
 }
 
 int fsm_term_primary(token_t* t) {
+//	DEBUG(100);
+//	print_token(t);
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(t->class == CLASS_IDENTIFIER){
 			semantic_tbd();
 			return 1;
-		} else if(t->class == CLASS_INT || t->class == CLASS_FLOAT) {
+		} else if(t->class == CLASS_INT || t->class == CLASS_FLOAT || t->class == CLASS_STRING_LIT) {
 			semantic_tbd();
 			return 2;
 		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {

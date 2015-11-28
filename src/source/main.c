@@ -9,10 +9,15 @@
 #include "lex.h"
 #include "syntatic.h"
 
-int main() {
-	FILE* fp = fopen("test.cmm", "r");
+int main(int argc, char **argv) {
+	if(argc != 2) {
+		fprintf(stdout, "[INFO] Usage: compiler <file>\n");
+		return 0;
+	}
+
+	FILE* fp = fopen(argv[1], "r");
 	if(fp == NULL) {
-		fprintf(stderr, "Unable to open file test.cmm");
+		fprintf(stderr, "[ERROR] Unable to open file.\n");
 		exit(1);
 	}
 

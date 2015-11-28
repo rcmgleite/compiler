@@ -11,6 +11,7 @@
 typedef enum {
 	CLASS_INT, // int number
 	CLASS_FLOAT, // float number
+	CLASS_STRING_LIT, // literal string
 	CLASS_RESERVED_WORD, // if, while, int, ...
 	CLASS_IDENTIFIER, // variable name
 	CLASS_SINGLE_OPERATOR, // '=', '>', '<', '!', '+', '-', '*', '/'
@@ -23,6 +24,7 @@ typedef struct token_t {
 	union value {
 		int i_value;
 		float f_value;
+		char* s_value;
 	} value;
 } token_t;
 

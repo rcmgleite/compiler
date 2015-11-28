@@ -1,7 +1,9 @@
 #comentario bla bla 
 int main() {
 	int a;
+	string xx;
 	a = 12;
+	xx = "teste top";
 	if (a>= 3) {
 		int b;
 		b = 4;

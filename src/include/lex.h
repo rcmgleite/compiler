@@ -24,6 +24,7 @@ typedef enum {
 	ST_COMMENT,
 	ST_NUM_INT,
 	ST_NUM_FLOAT,
+	ST_STR_LIT,
 	ST_APLHANUM,
 	ST_OPERATOR,
 	ST_DELIMITER,
@@ -39,9 +40,10 @@ typedef enum {
 	IN_DIGIT, // 0..9
 	IN_APLHA, //A-Za-z
 	IN_OPERATOR, // '=', '>', '<', '!', '+', '-', '*', '/'
-	IN_DELIMITER, //  '{', '}', '[', ']', ',', ';', ' ', '\t'
+	IN_DELIMITER, // '{', '}', '[', ']', ',', ';', ' ', '\t'
 	IN_COMMENT_BEGIN, // #
 	IN_DOT, // . -> only used for float numbers
+	IN_STRING_QUOTE, // '"'
 	IN_CLASS_SIZE
 } input_class;
 

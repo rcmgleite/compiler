@@ -8,7 +8,7 @@
 #include "utils.h"
 
 void semantic_tbd() {
-	DEBUG("TODO");
+//	DEBUG("TODO");
 }
 
 

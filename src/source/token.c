@@ -14,6 +14,8 @@ token_t* new_token(token_class c, void* val) {
 	t->class = c;
 	if(c == CLASS_FLOAT) {
 		t->value.f_value = (float)*((float*)val);
+	} else if(c == CLASS_STRING_LIT) {
+		t->value.s_value = (char*) val;
 	} else {
 		t->value.i_value = (int)*((int*)val);
 	}
@@ -27,6 +29,9 @@ void print_token(token_t* t) {
 		break;
 	case CLASS_FLOAT:
 		printf("token_class: %s\n", "CLASS_FLOAT");
+		break;
+	case CLASS_STRING_LIT:
+		printf("token_class: %s\n", "CLASS_STRING_LIT");
 		break;
 	case CLASS_RESERVED_WORD:
 		printf("token_class: %s\n", "CLASS_RESERVED_WORD");
@@ -50,6 +55,9 @@ void print_token(token_t* t) {
 
 	if(t->class == CLASS_FLOAT) {
 		printf("token_value: %f\n\n", t->value.f_value);
+	} else if(t->class == CLASS_STRING_LIT) {
+		printf("token_value: %s\n\n", t->value.s_value);
+
 	} else {
 		printf("token value: %d\n\n", t->value.i_value);
 	}

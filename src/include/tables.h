@@ -11,7 +11,7 @@
 /*
  *	Reserved words
  */
-#define RESERVED_WORDS_SIZE 9
+#define RESERVED_WORDS_SIZE 10
 const char** get_reserved_words();
 
 /*
@@ -31,6 +31,16 @@ const char** get_double_operators();
  */
 #define DELIMITERS_SIZE 11
 const char* get_delimiters();
+
+/*
+ *	String quote
+ */
+const char get_string_quote();
+
+/*
+ *	Dot
+ */
+const char get_dot();
 
 /*
  *	commentary

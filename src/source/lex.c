@@ -51,25 +51,27 @@ void destroy_state_struct(state_struct_t* ss) {
  *	Table that represents the Transductor states
  *
  *
- *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT   STRING_QUOTE
  *	INIT
  *	COMMENT
  *	N_INT
  *	FLOAT
+ *	STRING_LIT
  *	ALPHAN
  *	OP
  *	DELIM
  *	LEX_ERROR
  */
 const state_t next_state[STATES_SIZE][IN_CLASS_SIZE] = {
-		{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR },
-		{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT },
-		{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT },
-		{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR },
-		{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR },
-		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
-		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END },
-		{ ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR }
+		{ ST_NUM_INT,	ST_APLHANUM, 	ST_OPERATOR,	ST_DELIMITER,	ST_COMMENT,	ST_LEX_ERROR, ST_STR_LIT},
+		{ ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT,	ST_COMMENT, ST_COMMENT },
+		{ ST_NUM_INT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_NUM_FLOAT, ST_TOKEN_END },
+		{ ST_NUM_FLOAT,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR, ST_LEX_ERROR },
+		{ ST_STR_LIT,	ST_STR_LIT,	ST_STR_LIT,	ST_STR_LIT,	ST_STR_LIT,	ST_STR_LIT, ST_TOKEN_END},
+		{ ST_APLHANUM,	ST_APLHANUM,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_LEX_ERROR, ST_LEX_ERROR },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_OPERATOR,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END, ST_TOKEN_END },
+		{ ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END,	ST_TOKEN_END, ST_TOKEN_END },
+		{ ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR,	ST_LEX_ERROR, ST_LEX_ERROR }
 };
 
 /*
@@ -90,7 +92,7 @@ void append_input(state_struct_t* param) {
 void handle_delimiter_init(state_struct_t* param) {
 	if((param->curr_input == ' ' || param->curr_input == '\t' || param->curr_input == '\n')) {
 		*param->curr_state = ST_INIT;
-	} else {
+	} else{
 		append_input(param);
 	}
 
@@ -118,31 +120,47 @@ void handle_token_end(state_struct_t* param) {
 	*param->curr_state = ST_TOKEN_END;
 }
 
+void handle_str_lit(state_struct_t* param) {
+	if(param->curr_input == '"' && *param->curr_state == ST_INIT) {
+		*param->last_state = *param->curr_state;
+		*param->curr_state = ST_STR_LIT;
+	} else if(param->curr_input != '"') {
+		param->buffer[*(param->buffer_ptr)] = param->curr_input;
+		*(param->buffer_ptr)+=1;
+		param->buffer[*(param->buffer_ptr)] = 0;
+	} else if(param->curr_input == '"' && *param->curr_state == ST_STR_LIT){
+		*param->last_state = *param->curr_state;
+		*param->curr_state = ST_TOKEN_END;
+	}
+}
+
 void handle_error(state_struct_t* param) {
 	printf(">>ERROR: BUILD FAILED!\n");
 	exit(1);
 }
 
 /*
- *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT
+ *			digit	alpha	operator	DELIMITER	COMM_INIT	DOT	STRING_QUOTE
  *	INIT
  *	COMMENT
  *	N_INT
  *	FLOAT
+ *	STR_LIT
  *	ALPHAN
  *	OP
  *	DELIM
  *	LEX_ERROR
  */
 void (* state_function[STATES_SIZE][IN_CLASS_SIZE]) (state_struct_t* param) = {
-		{ append_input,	append_input,	append_input,	handle_delimiter_init,	handle_comment_init,	handle_error },
-		{ ignore_input,	ignore_input,	ignore_input,	handle_comment_delimiter,	ignore_input,	ignore_input },
-		{ append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	append_input },
-		{ append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_error },
-		{ append_input,	append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_error },
-		{ handle_token_end,	handle_token_end,	append_input,	handle_token_end,	handle_token_end,	handle_token_end },
-		{ handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end },
-		{ handle_error,	handle_error,	handle_error,	handle_error,	handle_error,	handle_error }
+		{ append_input,	append_input,	append_input,	handle_delimiter_init,	handle_comment_init,	handle_error, handle_str_lit },
+		{ ignore_input,	ignore_input,	ignore_input,	handle_comment_delimiter,	ignore_input,	ignore_input, ignore_input },
+		{ append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	append_input, handle_error },
+		{ append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_error, handle_error },
+		{ handle_str_lit, handle_str_lit, handle_str_lit, handle_str_lit, handle_str_lit, handle_str_lit, handle_str_lit},
+		{ append_input,	append_input,	handle_token_end,	handle_token_end,	handle_token_end,	handle_error, handle_error },
+		{ handle_token_end,	handle_token_end,	append_input,	handle_token_end,	handle_token_end,	handle_token_end, handle_token_end },
+		{ handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end,	handle_token_end, handle_token_end },
+		{ handle_error,	handle_error,	handle_error,	handle_error,	handle_error,	handle_error, handle_error }
 };
 
 /*
@@ -180,7 +198,11 @@ int is_comment_begin(char c) {
 }
 
 int is_dot(char c) {
-	return c == '.';
+	return c == get_dot();
+}
+
+int is_string_quote(char c) {
+	return c == get_string_quote();
 }
 
 /*
@@ -200,6 +222,8 @@ input_class classify_input_class(char c) {
 		return IN_COMMENT_BEGIN;
 	else if(is_dot(c))
 		return IN_DOT;
+	else if(is_string_quote(c))
+		return IN_STRING_QUOTE;
 	else
 		return -1;
 }
@@ -237,6 +261,9 @@ void build_token(state_struct_t* param) {
 		i_val = strtol(param->buffer, NULL, 10);
 		param->token = new_token(CLASS_INT, &i_val);
 		break;
+	case ST_STR_LIT:
+		param->token = new_token(CLASS_STRING_LIT, param->buffer);
+		break;
 	case ST_OPERATOR:
 		if(*param->buffer_ptr == 1){
 			for(i = 0; i < SINGLE_OPERATORS_SIZE; i++) {
@@ -253,7 +280,7 @@ void build_token(state_struct_t* param) {
 		}
 		break;
 	default:
-		fprintf(stderr, ">> Shouldn't get at 'default' option of build_token\nUnknown error\n");
+		fprintf(stderr, "[ERROR] Shouldn't get at 'default' option of build_token\nUnknown error\n");
 	}
 }
 
@@ -276,11 +303,14 @@ token_t* get_token(FILE *fp) {
 			break;
 		}
 
+//		fprintf(stdout, "[DEBUG] curr_char = %c\n", state_struct.curr_input);
+
 		/*
 		 *	update state_struct
 		 */
 		state_struct.input_class = classify_input_class(state_struct.curr_input);
 
+//		fprintf(stdout, "[DEBUG] curr_state = %d\n", *state_struct.curr_state);
 		state_function[*state_struct.curr_state][state_struct.input_class](&state_struct);
 	} while(*state_struct.curr_state != ST_TOKEN_END);
 
@@ -288,8 +318,9 @@ token_t* get_token(FILE *fp) {
 	 * 	Build token to be returned
 	 */
 	if(*state_struct.buffer_ptr != 0){
-//		printf(">> buffer: %s\n", state_struct.buffer);
+//		printf("[INFO] buffer: %s\n", state_struct.buffer);
 		build_token(&state_struct);
+//		print_token(state_struct.token);
 	}
 
 	/*

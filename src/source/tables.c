@@ -9,7 +9,7 @@
 /*
  *	Reserved words
  */
-const char* reserved_words[] = { "if", "else", "while", "int", "float",
+const char* reserved_words[] = { "if", "else", "while", "int", "float", "string",
 		"return", "const", "break", "continue" };
 
 const char**  get_reserved_words() {
@@ -33,11 +33,27 @@ const char** get_double_operators() {
 }
 
 /*
- *	delimiters
+ *	Delimiters
  */
 const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
 const char* get_delimiters() {
 	return delimiters;
+}
+
+/*
+ *	String quote
+ */
+const char string_quote = '"';
+const char get_string_quote() {
+	return string_quote;
+}
+
+/*
+ *	Dot
+ */
+const char dot = '.';
+const char get_dot() {
+	return dot;
 }
 
 /*
