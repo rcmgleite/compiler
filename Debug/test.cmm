@@ -1,9 +1,19 @@
+int func(int integer) {
+	string z;
+	z = "literal example";
+	write(z, integer);
+	return integer;
+}
+
 #comentario bla bla 
 int main() {
+	func();
 	int a;
 	string xx;
+	read(xx);
+
 	a = 12;
-	xx = "teste top";
+	xx = "test literal";
 	if (a>= 3) {
 		int b;
 		b = 4;

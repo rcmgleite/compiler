@@ -346,6 +346,12 @@ int fsm_instruction(token_t* t) {
 			} else if(strcmp(get_reserved_words()[t->value.i_value], "if") == 0) {
 				semantic_tbd();
 				return 4;
+			} else if(strcmp(get_reserved_words()[t->value.i_value], "read") == 0) {
+				semantic_tbd();
+				return 6;
+			} else if(strcmp(get_reserved_words()[t->value.i_value], "write") == 0) {
+				semantic_tbd();
+				return 7;
 			} else {
 				semantic_tbd();
 				return call_sm(FSM_VAR_DECLARATION, 1);
@@ -359,67 +365,95 @@ int fsm_instruction(token_t* t) {
 	case 1:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ';') {
 			semantic_tbd();
-			return 6;
+			return 8;
 		}
 		break;
 
 	case 2:
 		semantic_tbd();
-		return call_sm(FSM_RETURN, 6);
+		return call_sm(FSM_RETURN, 8);
 
 	case 3:
 		semantic_tbd();
-		return call_sm(FSM_LOOP, 6);
+		return call_sm(FSM_LOOP, 8);
 
 	case 4:
 		semantic_tbd();
-		return call_sm(FSM_COND, 6);
+		return call_sm(FSM_COND, 8);
 
 	case 5:
 		if(t->class == CLASS_SINGLE_OPERATOR && get_single_operators()[t->value.i_value] == '=') {
 			semantic_tbd();
-			return 7;
+			return 14;
 		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
 			semantic_tbd();
-			return 8;
+			return 9;
 		}
 		break;
 
 	case 6:
+		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
+			semantic_tbd();
+			return 12;
+		}
+		break;
+
+	case 7:
+		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
+			semantic_tbd();
+			return 9;
+		}
+		break;
+
+
+	case 8:
 		//final state
 		pop(&stack);
 		return state.current_sub_machine_state;
-
-	case 7:
-		semantic_tbd();
-		return call_sm(FSM_EXPR, 1);
-
-	case 8:
-		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ')') {
-			semantic_tbd();
-			return 1;
-		} else {
-			semantic_tbd();
-			return call_sm(FSM_EXPR, 9);
-		}
-		break;
 
 	case 9:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ')') {
 			semantic_tbd();
 			return 1;
-		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ',') {
+		}
+		semantic_tbd();
+		return call_sm(FSM_EXPR, 10);
+
+	case 10:
+		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ',') {
 			semantic_tbd();
-			return 10;
+			return 11;
+		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ')') {
+			semantic_tbd();
+			return 1;
 		}
 		break;
 
-	case 10:
+	case 11:
 		semantic_tbd();
-		return call_sm(FSM_EXPR, 9);
-	}
-	return ERROR;
+		return call_sm(FSM_EXPR, 10);
 
+	case 12:
+		if(t->class == CLASS_IDENTIFIER) {
+			semantic_tbd();
+			return 13;
+		}
+		break;
+
+	case 13:
+		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ')') {
+			semantic_tbd();
+			return 1;
+		}
+		break;
+
+	case 14:
+		semantic_tbd();
+		return call_sm(FSM_EXPR, 1);
+
+	}
+
+	return ERROR;
 }
 
 int fsm_loop(token_t* t) {

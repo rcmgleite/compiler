@@ -10,7 +10,7 @@
  *	Reserved words
  */
 const char* reserved_words[] = { "if", "else", "while", "int", "float", "string",
-		"return", "const", "break", "continue" };
+		"return", "const", "break", "continue", "read", "write" };
 
 const char**  get_reserved_words() {
 	return reserved_words;

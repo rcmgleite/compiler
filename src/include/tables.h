@@ -11,7 +11,7 @@
 /*
  *	Reserved words
  */
-#define RESERVED_WORDS_SIZE 10
+#define RESERVED_WORDS_SIZE 12
 const char** get_reserved_words();
 
 /*

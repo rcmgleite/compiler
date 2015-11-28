@@ -1,6 +1,6 @@
 programa = {tipo identificador "(" [declaracao_variavel {"," declaracao_variavel}] ")" "{"  {instrucao} "}" | tipo identificador [ "[" expressao "]" ] ";"}. 
 declaracao_variavel = tipo identificador [ "[" expressao "]" ].
-instrucao = declaracao_variavel ";" | "return" retorno | "break" ";" | "continue" ";" | "while" laco | "if" condicional | identificador "=" expressao ";" | identificador "(" [{expressao ","} expressao] ")" ";".
+instrucao = declaracao_variavel ";" | "return" retorno | "break" ";" | "continue" ";" | "while" laco | "if" condicional | identificador "=" expressao ";" | identificador "(" [{expressao ","} expressao] ")" ";" | "read" "(" identificador ")" ";" | "write" "(" [{expressao ","} expressao] ")" ";".
 laco = "(" expressao ")" "{" {instrucao} "}".
 condicional = "(" expressao ")" "{" {instrucao} ["else" {instrucao}] "}".
 retorno = expressao ";".

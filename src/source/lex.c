@@ -303,7 +303,7 @@ token_t* get_token(FILE *fp) {
 			break;
 		}
 
-//		fprintf(stdout, "[DEBUG] curr_char = %c\n", state_struct.curr_input);
+		fprintf(stdout, "[DEBUG] curr_char = %c\n", state_struct.curr_input);
 
 		/*
 		 *	update state_struct
@@ -318,7 +318,7 @@ token_t* get_token(FILE *fp) {
 	 * 	Build token to be returned
 	 */
 	if(*state_struct.buffer_ptr != 0){
-//		printf("[INFO] buffer: %s\n", state_struct.buffer);
+		printf("[INFO] buffer: %s\n", state_struct.buffer);
 		build_token(&state_struct);
 //		print_token(state_struct.token);
 	}
