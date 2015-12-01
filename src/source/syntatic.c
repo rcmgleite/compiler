@@ -199,6 +199,7 @@ int fsm_program(token_t* t){
 	case 1:
 		if(t->class == CLASS_IDENTIFIER) {
 			if(symbol_table_insert(&symbol_table, t, state.last_token->value.i_value, 1) == 0) {
+				fprintf(stderr, "[ERROR] Function declared twice on the same scope");
 				return ERROR;
 			}
 			return 2;
@@ -397,24 +398,29 @@ int fsm_instruction(token_t* t) {
 		semantic_tbd();
 		return call_sm(FSM_COND, 8);
 
-	case 5:
+	case 5: // assing
 		if(t->class == CLASS_SINGLE_OPERATOR && get_single_operators()[t->value.i_value] == '=') {
-			semantic_tbd();
+			if (check_scope(&symbol_table, state.last_token->value.s_value) == 0) {
+				fprintf(stderr, "[ERROR] Variable should be declared before used");
+				return ERROR;
+			}
 			return 14;
 		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
-			semantic_tbd();
+			if (check_scope(&symbol_table, state.last_token->value.s_value) == 0) {
+				fprintf(stderr, "[ERROR] Function should be declared before used");
+				return ERROR;
+			}
 			return 9;
 		}
 		break;
 
-	case 6:
+	case 6: // chamada de subrotina READ
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
-			semantic_tbd();
 			return 12;
 		}
 		break;
 
-	case 7:
+	case 7: // chamada de subrotina WRITE
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
 			semantic_tbd();
 			return 9;
@@ -579,7 +585,12 @@ int fsm_return(token_t* t) {
 	switch(state.current_sub_machine_state) {
 	case 0:
 		semantic_tbd();
-		return call_sm(FSM_EXPR, 1);
+		int ret = call_sm(FSM_EXPR, 1);
+		if (check_scope(&symbol_table, state.curr_token->value.s_value) == 0) {
+			fprintf(stderr, "[ERROR] Variable should be declared before used");
+			return ERROR;
+		}
+		return ret;
 
 	case 1:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == ';') {
