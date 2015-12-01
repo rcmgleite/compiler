@@ -12,7 +12,7 @@
 /*
  *	Symbol table entry struct
  */
-typedef struct symbol_table_entry_t {
+typedef struct symbol_table_entry {
 	char* name;
 	int type;
 	int is_function;
@@ -23,9 +23,9 @@ typedef struct symbol_table_entry_t {
 /*
  * Symbol table structure
  */
-typedef struct symbol_table_t {
+typedef struct symbol_table {
 	symbol_table_entry_t* first_row;
-	struct symbol_table_t* prev;
+	struct symbol_table* prev;
 	unsigned size;
 } symbol_table_t;
 
