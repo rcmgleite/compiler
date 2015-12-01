@@ -7,6 +7,7 @@ C_SRCS += \
 ../src/source/lex.c \
 ../src/source/main.c \
 ../src/source/semantic.c \
+../src/source/symbol_table.c \
 ../src/source/syntatic.c \
 ../src/source/tables.c \
 ../src/source/token.c 
@@ -15,6 +16,7 @@ OBJS += \
 ./src/source/lex.o \
 ./src/source/main.o \
 ./src/source/semantic.o \
+./src/source/symbol_table.o \
 ./src/source/syntatic.o \
 ./src/source/tables.o \
 ./src/source/token.o 
@@ -23,6 +25,7 @@ C_DEPS += \
 ./src/source/lex.d \
 ./src/source/main.d \
 ./src/source/semantic.d \
+./src/source/symbol_table.d \
 ./src/source/syntatic.d \
 ./src/source/tables.d \
 ./src/source/token.d 

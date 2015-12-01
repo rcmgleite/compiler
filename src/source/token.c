@@ -6,6 +6,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "token.h"
 
@@ -14,8 +15,8 @@ token_t* new_token(token_class c, void* val) {
 	t->class = c;
 	if(c == CLASS_FLOAT) {
 		t->value.f_value = (float)*((float*)val);
-	} else if(c == CLASS_STRING_LIT) {
-		t->value.s_value = (char*) val;
+	} else if(c == CLASS_STRING_LIT || c == CLASS_IDENTIFIER) {
+		t->value.s_value = strdup((char*) val);
 	} else {
 		t->value.i_value = (int)*((int*)val);
 	}

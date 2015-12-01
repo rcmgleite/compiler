@@ -20,12 +20,12 @@ typedef enum {
 } token_class;
 
 typedef struct token_t {
-	token_class class;
 	union value {
 		int i_value;
 		float f_value;
 		char* s_value;
 	} value;
+	token_class class;
 } token_t;
 
 /*

@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+
 #include "syntatic.h"
 #include "utils.h"
 #include "token.h"
@@ -13,6 +14,7 @@
 #include "semantic.h"
 #include "tables.h"
 #include "string.h"
+#include "symbol_table.h"
 
 /*
  *	Structure that represents the state of the analysis
@@ -20,6 +22,8 @@
 typedef struct {
 	int current_sub_machine_state;
 	sub_machine_t current_sub_machine;
+	token_t* curr_token;
+	token_t* last_token;
 	int get_token_flag;
 } analysis_state_t;
 
@@ -47,6 +51,10 @@ int (* const sub_machines[FSM_SIZE]) (token_t* t) = {
  */
 analysis_state_t state;
 
+/*
+ *	Global symbol table
+ */
+symbol_table_t symbol_table;
 
 /*
  *	Stack node has the sub-machine and state
@@ -137,21 +145,24 @@ int call_sm(sub_machine_t sm, int ret_st) {
  * 	Entry point for compilation
  */
 int analyze(FILE* fp) {
-	token_t* t;
 	state.get_token_flag = 1;
 	state.current_sub_machine_state = 0;
 	state.current_sub_machine = 0;
+	state.curr_token = NULL;
+	state.last_token = NULL;
 	while(TRUE) {
+		symbol_table_print(&symbol_table);
 		if(should_get_next_token()) {
-			t = get_token(fp);
-			if (t == NULL) {
+			state.last_token = state.curr_token;
+			state.curr_token = get_token(fp);
+			if (state.curr_token == NULL) {
 				break;
 			}
 		}
 
 		state.get_token_flag = 1;
 
-		state.current_sub_machine_state = sub_machines[state.current_sub_machine](t);
+		state.current_sub_machine_state = sub_machines[state.current_sub_machine](state.curr_token);
 		if(state.current_sub_machine_state == ERROR) {
 			DEBUG("Compilation error!!!!");
 			return 1;
@@ -181,14 +192,15 @@ int fsm_program(token_t* t){
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(is_type(t)) {
-			semantic_tbd();
 			return 1;
 		}
 		break;
 
 	case 1:
 		if(t->class == CLASS_IDENTIFIER) {
-			semantic_tbd();
+			if(symbol_table_insert(&symbol_table, t, state.last_token->value.i_value, 1) == 0) {
+				return ERROR;
+			}
 			return 2;
 		}
 		break;
@@ -295,6 +307,10 @@ int fsm_var_declaration(token_t* t){
 	case 1:
 		if(t->class == CLASS_IDENTIFIER) {
 			semantic_tbd();
+			if(symbol_table_insert(&symbol_table, t, state.last_token->value.i_value, 0) == 0) {
+				fprintf(stderr, "[ERROR] Variable declared twice on the same scope");
+				return ERROR;
+			}
 			return 2;
 		}
 		break;
@@ -752,8 +768,6 @@ int fsm_term_mult(token_t* t) {
 }
 
 int fsm_term_primary(token_t* t) {
-//	DEBUG(100);
-//	print_token(t);
 	switch(state.current_sub_machine_state) {
 	case 0:
 		if(t->class == CLASS_IDENTIFIER){

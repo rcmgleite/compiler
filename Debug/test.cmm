@@ -20,7 +20,7 @@ int main() {
 	}
 	#outro comentario bla bla
 	while(a==b) {
-		float c; 
+		int c; 
 		c =43;
 	}
 	
