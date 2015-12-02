@@ -7,6 +7,8 @@
 
 #ifndef SRC_INCLUDE_SYMBOL_TABLE_H_
 #define SRC_INCLUDE_SYMBOL_TABLE_H_
+#include <stdlib.h>
+
 #include "token.h"
 
 /*
@@ -28,6 +30,21 @@ typedef struct symbol_table {
 	struct symbol_table* prev;
 	unsigned size;
 } symbol_table_t;
+
+/*
+ *	Allocates memory for a new symbol_table_t struct
+ */
+symbol_table_t* new_symbol_table_t();
+
+/*
+ *	Opens a new scope and update the symbol_table parameter with it
+ */
+void symbol_table_new_scope(symbol_table_t** t);
+
+/*
+ *	Closes the current scope and free all memory needed.
+ */
+void symbol_table_close_scope(symbol_table_t** t);
 
 /*
  *	Return 1 if symbol is preset on symbol table and 0 otherwise

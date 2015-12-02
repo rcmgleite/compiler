@@ -2,4 +2,4 @@ lexical_analyzer
 compiler
 *.o
 *.d
-Debug/src
+Debug

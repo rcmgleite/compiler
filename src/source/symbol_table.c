@@ -38,10 +38,38 @@ static symbol_table_entry_t* new_entry_from_token(token_t* token, int type, int 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
+void symbol_table_new_scope(symbol_table_t** t) {
+	DEBUG("Opening a new Scope");
+	symbol_table_t* new_scope = malloc(sizeof(symbol_table_t));
+	new_scope->first_row = NULL;
+	new_scope->size = 0;
+	new_scope->prev = *t;
+	*t = new_scope;
+}
+
+void symbol_table_close_scope(symbol_table_t** t) {
+	DEBUG("Closing Scope");
+	symbol_table_t* aux = (*t)->prev;
+	symbol_table_entry_t* curr_row = (*t)->first_row;
+
+	// Clean rows memory
+	while(curr_row != NULL) {
+		symbol_table_entry_t* next_row = curr_row->next;
+		free(curr_row->name);
+		free(curr_row);
+		curr_row = next_row;
+	}
+
+	//Clean symbol_table memory
+	free(*t);
+	*t = aux;
+}
+
 static void do_insert_symbol(symbol_table_t* t, token_t *token, int type, int is_function) {
 	symbol_table_entry_t* old_first_row = t->first_row;
 	t->first_row = new_entry_from_token(token, type, is_function);
 	t->first_row->next = old_first_row;
+	t->size++;
 }
 
 symbol_table_t* new_symbol_table_t() {

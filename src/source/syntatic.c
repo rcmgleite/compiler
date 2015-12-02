@@ -54,7 +54,7 @@ analysis_state_t state;
 /*
  *	Global symbol table
  */
-symbol_table_t symbol_table;
+symbol_table_t* symbol_table;
 
 /*
  *	Stack node has the sub-machine and state
@@ -150,9 +150,12 @@ int analyze(FILE* fp) {
 	state.current_sub_machine = 0;
 	state.curr_token = NULL;
 	state.last_token = NULL;
+
+	symbol_table = new_symbol_table_t();
+
 	while(TRUE) {
-		symbol_table_print(&symbol_table);
 		if(should_get_next_token()) {
+			symbol_table_print(symbol_table);
 			state.last_token = state.curr_token;
 			state.curr_token = get_token(fp);
 			if (state.curr_token == NULL) {
@@ -198,7 +201,7 @@ int fsm_program(token_t* t){
 
 	case 1:
 		if(t->class == CLASS_IDENTIFIER) {
-			if(symbol_table_insert(&symbol_table, t, state.last_token->value.i_value, 1) == 0) {
+			if(symbol_table_insert(symbol_table, t, state.last_token->value.i_value, 1) == 0) {
 				fprintf(stderr, "[ERROR] Function declared twice on the same scope");
 				return ERROR;
 			}
@@ -259,14 +262,14 @@ int fsm_program(token_t* t){
 
 	case 7:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '{') {
-			semantic_tbd();
+			symbol_table_new_scope(&symbol_table);
 			return 8;
 		}
 		break;
 
 	case 8:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '}') {
-			semantic_tbd();
+			symbol_table_close_scope(&symbol_table);
 			return 5;
 		} else {
 			semantic_tbd();
@@ -308,7 +311,7 @@ int fsm_var_declaration(token_t* t){
 	case 1:
 		if(t->class == CLASS_IDENTIFIER) {
 			semantic_tbd();
-			if(symbol_table_insert(&symbol_table, t, state.last_token->value.i_value, 0) == 0) {
+			if(symbol_table_insert(symbol_table, t, state.last_token->value.i_value, 0) == 0) {
 				fprintf(stderr, "[ERROR] Variable declared twice on the same scope");
 				return ERROR;
 			}
@@ -400,13 +403,13 @@ int fsm_instruction(token_t* t) {
 
 	case 5: // assing
 		if(t->class == CLASS_SINGLE_OPERATOR && get_single_operators()[t->value.i_value] == '=') {
-			if (check_scope(&symbol_table, state.last_token->value.s_value) == 0) {
+			if (check_scope(symbol_table, state.last_token->value.s_value) == 0) {
 				fprintf(stderr, "[ERROR] Variable should be declared before used");
 				return ERROR;
 			}
 			return 14;
 		} else if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '(') {
-			if (check_scope(&symbol_table, state.last_token->value.s_value) == 0) {
+			if (check_scope(symbol_table, state.last_token->value.s_value) == 0) {
 				fprintf(stderr, "[ERROR] Function should be declared before used");
 				return ERROR;
 			}
@@ -500,14 +503,14 @@ int fsm_loop(token_t* t) {
 
 	case 3:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '{') {
-			semantic_tbd();
+			symbol_table_new_scope(&symbol_table);
 			return 4;
 		}
 		break;
 
 	case 4:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '}') {
-			semantic_tbd();
+			symbol_table_close_scope(&symbol_table);
 			return 5;
 		} else {
 			semantic_tbd();
@@ -545,7 +548,7 @@ int fsm_cond(token_t* t) {
 
 	case 3:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '{') {
-			semantic_tbd();
+			symbol_table_new_scope(&symbol_table);
 			return 4;
 		}
 		break;
@@ -555,7 +558,7 @@ int fsm_cond(token_t* t) {
 			semantic_tbd();
 			return 5;
 		} else if (t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '}') {
-			semantic_tbd();
+			symbol_table_close_scope(&symbol_table);
 			return 6;
 		} else {
 			semantic_tbd();
@@ -565,7 +568,7 @@ int fsm_cond(token_t* t) {
 
 	case 5:
 		if(t->class == CLASS_DELIMITER && get_delimiters()[t->value.i_value] == '}') {
-			semantic_tbd();
+			symbol_table_close_scope(&symbol_table);
 			return 6;
 		} else {
 			semantic_tbd();
@@ -586,7 +589,7 @@ int fsm_return(token_t* t) {
 	case 0:
 		semantic_tbd();
 		int ret = call_sm(FSM_EXPR, 1);
-		if (check_scope(&symbol_table, state.curr_token->value.s_value) == 0) {
+		if (check_scope(symbol_table, state.curr_token->value.s_value) == 0) {
 			fprintf(stderr, "[ERROR] Variable should be declared before used");
 			return ERROR;
 		}
