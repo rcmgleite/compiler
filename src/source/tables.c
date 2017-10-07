@@ -7,59 +7,59 @@
 #include "tables.h"
 
 /*
- *	Reserved words
+ *  Reserved words
  */
 const char* reserved_words[] = { "if", "else", "while", "int", "float", "string",
-		"return", "const", "break", "continue", "read", "write" };
+    "return", "const", "break", "continue", "read", "write" };
 
 const char**  get_reserved_words() {
-	return reserved_words;
+  return reserved_words;
 }
 
 /*
- *	Single operators
+ *  Single operators
  */
 const char single_operators[] = {'=', '>', '<', '!', '+', '-', '*', '/', '^', '&', '|' };
 const char* get_single_operators() {
-	return single_operators;
+  return single_operators;
 }
 
 /*
- *	Double operators
+ *  Double operators
  */
 const char* double_operators[] = {"==", ">=", "<=", "!=", "&&", "||" };
 const char** get_double_operators() {
-	return double_operators;
+  return double_operators;
 }
 
 /*
- *	Delimiters
+ *  Delimiters
  */
 const char delimiters[DELIMITERS_SIZE] = { '{', '}', '[', ']', '(', ')', ',', ';', ' ', '\n', '\t' };
 const char* get_delimiters() {
-	return delimiters;
+  return delimiters;
 }
 
 /*
- *	String quote
+ *  String quote
  */
 const char string_quote = '"';
-const char get_string_quote() {
-	return string_quote;
+char get_string_quote() {
+  return string_quote;
 }
 
 /*
- *	Dot
+ *  Dot
  */
 const char dot = '.';
-const char get_dot() {
-	return dot;
+char get_dot() {
+  return dot;
 }
 
 /*
- *	comment begin
+ *  comment begin
  */
 const char commentary = '#';
-const char get_commentary() {
-	return commentary;
+char get_commentary() {
+  return commentary;
 }

@@ -17,58 +17,58 @@
 #define SYMBOL_TABLE_SIZE 4096
 
 /*
- *	Transductor states enum
+ *  Transductor states enum
  */
 typedef enum {
-	ST_INIT,
-	ST_COMMENT,
-	ST_NUM_INT,
-	ST_NUM_FLOAT,
-	ST_STR_LIT,
-	ST_APLHANUM,
-	ST_OPERATOR,
-	ST_DELIMITER,
-	ST_TOKEN_END,
-	ST_LEX_ERROR,
-	STATES_SIZE
+  ST_INIT,
+  ST_COMMENT,
+  ST_NUM_INT,
+  ST_NUM_FLOAT,
+  ST_STR_LIT,
+  ST_APLHANUM,
+  ST_OPERATOR,
+  ST_DELIMITER,
+  ST_TOKEN_END,
+  ST_LEX_ERROR,
+  STATES_SIZE
 } state_t;
 
 /*
- *	possible input characters classes
+ *  possible input characters classes
  */
 typedef enum {
-	IN_DIGIT, // 0..9
-	IN_APLHA, //A-Za-z
-	IN_OPERATOR, // '=', '>', '<', '!', '+', '-', '*', '/'
-	IN_DELIMITER, // '{', '}', '[', ']', ',', ';', ' ', '\t'
-	IN_COMMENT_BEGIN, // #
-	IN_DOT, // . -> only used for float numbers
-	IN_STRING_QUOTE, // '"'
-	IN_CLASS_SIZE
+  IN_DIGIT, // 0..9
+  IN_APLHA, //A-Za-z
+  IN_OPERATOR, // '=', '>', '<', '!', '+', '-', '*', '/'
+  IN_DELIMITER, // '{', '}', '[', ']', ',', ';', ' ', '\t'
+  IN_COMMENT_BEGIN, // #
+  IN_DOT, // . -> only used for float numbers
+  IN_STRING_QUOTE, // '"'
+  IN_CLASS_SIZE
 } input_class;
 
 /*
- *	Struct that represents the state function parameters
+ *  Struct that represents the state function parameters
  */
 typedef struct state_struct_t {
-	char curr_input;
-	char* buffer;
-	unsigned *buffer_ptr;
-	FILE* fp;
-	state_t* last_state;
-	state_t* curr_state;
-	input_class input_class;
-	token_t* token;
+  char curr_input;
+  char* buffer;
+  unsigned *buffer_ptr;
+  FILE* fp;
+  state_t* last_state;
+  state_t* curr_state;
+  input_class input_class;
+  token_t* token;
 } state_struct_t;
 
 /*
- *	state struct lifecycle functions
+ *  state struct lifecycle functions
  */
 void create_state_struct(state_struct_t* ss, FILE* fp);
 void destroy_state_struct(state_struct_t* ss);
 
 /*
- *	main function
+ *  main function
  */
 token_t* get_token(FILE *fp);
 

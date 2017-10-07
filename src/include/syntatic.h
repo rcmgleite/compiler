@@ -12,29 +12,29 @@
 #include "token.h"
 
 typedef enum {
-	FSM_PROGRAM,
-	FSM_VAR_DECLARATION,
-	FSM_INSTRUCTION,
-	FSM_LOOP,
-	FSM_COND,
-	FSM_RETURN,
-	FSM_EXPR,
-	FSM_TERM_AND,
-	FSM_TERM_EQUAL,
-	FSM_TERM_RELACIONAL,
-	FSM_TERM_ADD,
-	FSM_TERM_MULT,
-	FSM_TERM_PRIMARY,
-	FSM_SIZE
+  FSM_PROGRAM,
+  FSM_VAR_DECLARATION,
+  FSM_INSTRUCTION,
+  FSM_LOOP,
+  FSM_COND,
+  FSM_RETURN,
+  FSM_EXPR,
+  FSM_TERM_AND,
+  FSM_TERM_EQUAL,
+  FSM_TERM_RELACIONAL,
+  FSM_TERM_ADD,
+  FSM_TERM_MULT,
+  FSM_TERM_PRIMARY,
+  FSM_SIZE
 } sub_machine_t;
 
 /*
- * 	Entry point for compilation
+ *   Entry point for compilation
  */
 int analyze(FILE *fp);
 
 /*
- *	Internal state functions
+ *  Internal state functions
  */
 int fsm_program(token_t* t);
 int fsm_var_declaration(token_t* t);

@@ -3,3 +3,5 @@ compiler
 *.o
 *.d
 Debug
+CMakeLists.txt.user
+build

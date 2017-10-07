@@ -9,41 +9,41 @@
 #define SRC_INCLUDE_TABLES_H_
 
 /*
- *	Reserved words
+ *  Reserved words
  */
 #define RESERVED_WORDS_SIZE 12
 const char** get_reserved_words();
 
 /*
- *	Single operators
+ *  Single operators
  */
 #define SINGLE_OPERATORS_SIZE 11
 const char* get_single_operators();
 
 /*
- *	Double operators
+ *  Double operators
  */
 #define DOUBLE_OPERATORS_SIZE 6
 const char** get_double_operators();
 
 /*
- *	delimiters
+ *  delimiters
  */
 #define DELIMITERS_SIZE 11
 const char* get_delimiters();
 
 /*
- *	String quote
+ *  String quote
  */
-const char get_string_quote();
+char get_string_quote();
 
 /*
- *	Dot
+ *  Dot
  */
-const char get_dot();
+char get_dot();
 
 /*
- *	commentary
+ *  commentary
  */
-const char get_commentary();
+char get_commentary();
 #endif /* SRC_INCLUDE_TABLES_H_ */
