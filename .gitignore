@@ -5,3 +5,4 @@ compiler
 Debug
 CMakeLists.txt.user
 build
+valgrind.out
